@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chats</title>
+    <script src="https://cdn.jsdelivr.net/npm/gun/gun.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 300px; margin: 0 auto; padding: 20px; }
+        input, button { width: 100%; margin-bottom: 10px; padding: 5px; box-sizing: border-box; }
+        #chat-container {
+            height: 400px;
+            border: 1px solid #ccc;
+            overflow-y: scroll;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        #message-input-container {
+            display: flex;
+            gap: 5px;
+        }
+        #message { flex-grow: 1; }
+        .media-message img, .media-message video { max-width: 100%; }
+        .message { 
+            position: relative; 
+            margin-bottom: 5px; 
+            padding-right: 30px; /* Add space for the delete button */
+        }
+        .delete-btn {
+            display: none;
+            position: absolute;
+            right: 5px; /* Position to the right of the message */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Center vertically */
+            background-color: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            padding: 2px 5px;
+            font-size: 12px;
+            width: auto; /* Width adjusts based on content */
+            height: auto;
+            border-radius: 3px;
+        }
+        .message:hover .delete-btn { display: block; }
+        #media-upload-btn {
+            width: auto;
+            padding: 5px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="auth-container">
+            <button onclick="showLoginForm()">Login</button>
+            <button onclick="showCreateAccountForm()">Create Account</button>
+        </div>
+        <div id="login-form" style="display:none;">
+            <input type="text" id="login-username" placeholder="Username or Email" required>
+            <input type="password" id="login-password" placeholder="Password" required>
+            <button onclick="login()">Login</button>
+        </div>
+        <div id="create-account-form" style="display:none;">
+            <input type="text" id="create-username" placeholder="Username" required>
+            <input type="email" id="create-email" placeholder="Email" required>
+            <input type="password" id="create-password" placeholder="Password" required>
+            <button onclick="createAccount()">Create Account</button>
+        </div>
+        <div id="chat-container" style="display:none;"></div>
+        <div id="message-container" style="display:none;">
+            <div id="message-input-container">
+                <input type="file" id="media-upload" style="display: none;" accept="*/*">
+                <button id="media-upload-btn" onclick="document.getElementById('media-upload').click()">+</button>
+                <input type="text" id="message" placeholder="Type your message">
+                <button onclick="sendMessage()">send</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gun = Gun(['https://gun-manhattan.herokuapp.com/gun']);
+        const chat = gun.get('group-chat');
+        const users = gun.get('users');
+        let currentUser = '';
+        let processedMessages = new Set();
+
+        // Check local storage on page load
+        window.onload = function() {
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = savedUser;
+                showChat();
+            } else {
+                showAuth();
+            }
+        };
+
+        function showAuth() {
+            document.getElementById('auth-container').style.display = 'block';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('create-account-form').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'none';
+            document.getElementById('message-container').style.display = 'none';
+        }
+
+        function showLoginForm() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('login-form').style.display = 'block';
+            setupEnterKeyNavigation('login-username', 'login-password', login);
+        }
+
+        function showCreateAccountForm() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('create-account-form').style.display = 'block';
+            setupEnterKeyNavigation('create-username', 'create-email', null);
+            setupEnterKeyNavigation('create-email', 'create-password', createAccount);
+        }
+
+        function setupEnterKeyNavigation(currentId, nextId, submitFunction) {
+            document.getElementById(currentId).addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    if (nextId) {
+                        document.getElementById(nextId).focus();
+                    } else if (submitFunction) {
+                        submitFunction();
+                    }
+                }
+            });
+        }
+
+        function login() {
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            
+            users.get(username).once((userData) => {
+                if (userData && userData.password === password) {
+                    currentUser = username;
+                    localStorage.setItem('currentUser', currentUser); // Save user to local storage
+                    showChat();
+                } else {
+                    alert("Invalid credentials. Please try again.");
+                }
+            });
+        }
+
+        function createAccount() {
+            const username = document.getElementById('create-username').value.trim();
+            const email = document.getElementById('create-email').value.trim();
+            const password = document.getElementById('create-password').value;
+            
+            if (!username || !email || !password) {
+                alert("All fields are required!");
+                return;
+            }
+
+            // Check if username or email already exists
+            users.get(username).once((existingUser) => {
+                if (existingUser) {
+                    alert("Username already exists. Please choose another.");
+                } else {
+                    users.map().once((user, userId) => {
+                        if (user.email === email) {
+                            alert("Email already registered. Please use another email.");
+                        } else {
+                            users.get(username).put({
+                                username: username,
+                                email: email,
+                                password: password
+                            });
+                            currentUser = username;
+                            localStorage.setItem('currentUser', currentUser); // Save user to local storage
+                            showChat();
+                        }
+                    });
+                }
+            });
+        }
+
+        function showChat() {
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('create-account-form').style.display = 'none';
+            document.getElementById('chat-container').style.display = 'block';
+            document.getElementById('message-container').style.display = 'block';
+            loadMessages();
+            setupEnterToSend();
+            setupMediaUpload();
+        }
+
+        function loadMessages() {
+            chat.map().once((message, id) => {
+                if (message !== null && !processedMessages.has(id)) {
+                    displayMessage(message, id);
+                    processedMessages.add(id);
+                }
+            });
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById('message');
+            const messageText = messageInput.value.trim();
+            if (messageText) {
+                const message = {
+                    user: currentUser,
+                    text: messageText,
+                    timestamp: Date.now()
+                };
+                chat.set(message);
+                messageInput.value = '';
+            }
+        }
+
+        function displayMessage(message, id) {
+            const chatContainer = document.getElementById('chat-container');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'message';
+            messageElement.dataset.id = id;
+            
+            if (message.mediaType) {
+                if (message.mediaType.startsWith('image') || message.mediaType.startsWith('video')) {
+                    const mediaElement = message.mediaType.startsWith('image') 
+                        ? document.createElement('img') 
+                        : document.createElement('video');
+                    mediaElement.src = message.mediaUrl;
+                    if (mediaElement.tagName === 'VIDEO') {
+                        mediaElement.controls = true;
+                    }
+                    messageElement.appendChild(mediaElement);
+                    messageElement.classList.add('media-message');
+                } else {
+                    const fileLink = document.createElement('a');
+                    fileLink.href = message.mediaUrl;
+                    fileLink.textContent = message.mediaName || 'Download';
+                    fileLink.download = message.mediaName; // Force download
+                    fileLink.target = '_blank'; // Open in new tab if possible
+                    messageElement.appendChild(fileLink);
+                }
+            } else {
+                messageElement.textContent = `${message.user}: ${message.text}`;
+            }
+
+            if (message.user === currentUser) {
+                const deleteButton = document.createElement('button');
+                deleteButton.textContent = 'X';
+                deleteButton.className = 'delete-btn';
+                deleteButton.onclick = () => deleteMessage(id);
+                messageElement.appendChild(deleteButton);
+            }
+
+            chatContainer.appendChild(messageElement);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function deleteMessage(id) {
+            chat.get(id).put(null);
+            const messageElement = document.querySelector(`.message[data-id="${id}"]`);
+            if (messageElement) {
+                messageElement.remove();
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser'); // Remove user from local storage
+            currentUser = '';
+            showAuth();
+        }
+
+        chat.map().on((message, id) => {
+            const messageElement = document.querySelector(`.message[data-id="${id}"]`);
+            if (message === null && messageElement) {
+                messageElement.remove();
+                processedMessages.delete(id); // Remove from processed set when deleted
+            } else if (message !== null && !processedMessages.has(id)) {
+                displayMessage(message, id);
+                processedMessages.add(id);
+            }
+        });
+
+        function setupEnterToSend() {
+            document.getElementById('message').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        }
+
+        function setupMediaUpload() {
+            const mediaUpload = document.getElementById('media-upload');
+            mediaUpload.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const message = {
+                            user: currentUser,
+                            mediaUrl: event.target.result,
+                            mediaType: file.type,
+                            mediaName: file.name,
+                            timestamp: Date.now()
+                        };
+                        chat.set(message);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
