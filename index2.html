@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Doto:wght@100..900&family=Geist+Mono:wght@100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <meta name="description" content="Exocr Technologies is a leading AI company pushing the boundaries of innovation. We leverage high-performance computing, research, and ethical practices to develop advanced AI solutions.">
+    <meta name="keywords" content="AI, artificial intelligence, machine learning, deep learning, computer vision, natural language processing, high-performance computing, HPC, Qilin AI, ethical AI, AI research, exocr, exocr technologies, exocr labs, Exocr china, exocr beijing, exocr qilin">
+
+    <meta property="og:title" content="Exocr  Technologies">
+    <meta property="og:description" content="Exocr Technologies is a leading AI company pushing the boundaries of innovation. We leverage high-performance computing, research, and ethical practices to develop advanced AI solutions.">
+    <meta property="og:url" content="https://exocr.tech">
+    <meta property="og:site_name" content="Exocr Technologies">
+
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Exocr Technologies">
+    <meta name="twitter:description" content="Exocr Technologies is a leading AI company pushing the boundaries of innovation. We leverage high-performance computing, research, and ethical practices to develop advanced AI solutions.">
+    <meta name="twitter:site" content="@exocrtech">
+
+    <meta name="robots" content="index, follow">
+    <meta name="googlebot" content="index, follow"> 
+    <link rel="canonical" href="https://exocr.tech">   
+
+    <title>易道博识 — Exocr</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+
+a:focus, a:active, input:focus, textarea:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+
+* {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-focus-ring-color: transparent;
+    outline: none;
+}
+      body {
+        font-family: "Doto", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 600;
+        font-style: normal;
+        font-variation-settings: "ROND" 0;
+      }
+      .logo,
+      .navbar,
+      h1,
+      button {
+        font-family: "Doto", sans-serif;
+        font-optical-sizing: auto;
+        font-weight: 900;
+        font-style: normal;
+        font-variation-settings: "ROND" 0;
+      }
+
+      .navbar {
+        position: fixed;
+        top: 0;
+        width: 100%;
+        background-color: whitesmoke;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 20px;
+        z-index: 1000;
+      }
+
+      .navbar .logo {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
+
+      .navbar .menu {
+        display: flex;
+        gap: 15px;
+      }
+
+      .navbar .menu a {
+        color: #333;
+        text-decoration: none;
+        font-size: 1em;
+      }
+
+      .navbar .menu a:hover {
+        text-decoration: underline;
+      }
+
+      .navbar .menu-icon {
+        display: none;
+        font-size: 1.5em;
+        cursor: pointer;
+      }
+      .content p {
+        text-align: left;
+      }
+
+      .placeholder img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        filter: grayscale(100%);
+      }
+
+      #section4 {
+        background-color: black;
+        color: white;
+      }
+
+      #section1 {
+        background-color: white;
+      }
+
+      
+      #section1 button {
+        margin-top: 5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: 10px 15px;
+        border: 0.3px solid rgba(228, 228, 228, 0.85);
+        -webkit-border-radius: 16px;
+        border-radius: 16px;
+        background: #f0f0f0;
+        -webkit-box-shadow: 12px 12px 24px #dddddd, -12px -12px 24px #ffffff;
+        box-shadow: 12px 12px 24px #dddddd, -12px -12px 24px #ffffff;
+      }
+
+      #section4 button {
+        margin-top: 5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        padding: 10px 15px;
+        border: 0.3px solid rgba(228, 228, 228, 0.85);
+        -webkit-border-radius: 16px;
+        border-radius: 16px;
+        background: #f0f0f0;
+        
+      }
+
+      #section1 button a {
+        text-decoration: none;
+        color: #333;
+      }
+
+      #section1 button:hover {
+        background-color: black;
+        color: #f0f0f0;
+      }
+
+      @media (max-width: 768px) {
+        .navbar .menu {
+          display: none;
+          flex-direction: column;
+          position: absolute;
+          width: 90vw;
+          top: 50px;
+          right: 20px;
+          background-color: white;
+          padding: 10px;
+          border-radius: 5px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .navbar .menu.show {
+          display: flex;
+        }
+
+        .navbar .menu-icon {
+          display: block;
+        }
+      }
+
+      section {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        text-align: center;
+        scroll-snap-align: start;
+      }
+
+      #section6 {
+        height: 30vh;
+        color: white;
+        background-color: black;
+        font-family: "Geist Mono", serif;
+        font-optical-sizing: auto;
+        font-weight: 300;
+        font-style: normal;
+        font-size: 0.8em;
+      }
+
+      section:nth-child(odd) {
+        background-color: #d0d0d0;
+      }
+
+      section:nth-child(even) {
+        background-color: #f0f0f0;
+      }
+
+      .content {
+        max-width: 800px;
+        width: 90%;
+      }
+
+      .content h1 {
+        font-size: 3em;
+        margin-bottom: 60px;
+      }
+
+      .content p {
+        margin: 10px 0;
+        line-height: 1.6;
+        font-size: 1.3em;
+      }
+
+      .placeholder {
+        width: 100%;
+        max-width: 900px;
+        height: 250px;
+        background-color: #ccc;
+        border-radius: 10px;
+        margin: 50px auto 0px auto;
+      }
+
+      @media (max-width: 768px) {
+        .content h1 {
+          font-size: 2em;
+        }
+
+        .content p {
+          font-size: 1em;
+        }
+
+        .placeholder {
+          height: 200px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        
+        .content h1 {
+          font-size: 1.9em;
+          
+        }
+
+        .content p {
+          font-size: 1.1em;
+        }
+
+        .placeholder {
+          height: 180px;
+        }
+
+       section{
+         padding: 10px;
+        }
+
+      }
+
+      /* Smooth Scrolling */
+      html {
+        scroll-behavior: smooth;
+      }
+
+      /* Full Page Scroll Snap */
+      body {
+        scroll-snap-type: y mandatory;
+      }
+
+    </style>
+  </head>
+  <body>
+    <header class="navbar">
+      <div class="logo">易道博识</div>
+      <div class="menu">
+        <a href="#section3">OSS</a>
+        <a href="https://qilin-exocr.vercel.app/" target="_blank">Qilin</a>
+        <a href="#section5">Research</a>
+        <a href="careers.html">Careers</a>
+      </div>
+      <div class="menu-icon" onclick="toggleMenu()">☰</div>
+    </header>
+
+    <section id="section1">
+      <div class="content">
+        <h1>Who are we?</h1>
+        <p>
+          We at Exocr Labs leverage advanced AI technologies to tackle
+          complex challenges, enhance operational efficiency, and create
+          personalized experiences that drive meaningful outcomes.
+        </p>
+        <a href="#section4">
+        <button>
+          <h2>What's New?</h2>
+        </button>
+      </a>
+      </div>
+    </section>
+
+    <section id="section2">
+      <div class="content">
+        <h1>High Performance Computing</h1>
+        <p>
+          Our data centers, equipped with hundreds of high-end GPUs and TPUs, enable us to train massive neural networks and accelerate the development of advanced AI models. By optimizing hardware and software, we maximize computational efficiency and minimize training time.
+        </p>
+        <div class="placeholder">
+          <img src="https://raw.githubusercontent.com/code-asm/main/refs/heads/main/image3.jpg" alt="lol" />
+        </div>
+      </div>
+    </section>
+
+    <section id="section3">
+      <div class="content">
+        <h1>OPEN SOURCE</h1>
+        <p>
+          Open-source AI models provide free access to advanced machine learning
+          tools, enabling developers and researchers to innovate without high
+          costs.
+        </p>
+        <div class="placeholder">
+          <img src="https://raw.githubusercontent.com/code-asm/main/refs/heads/main/image2.jpg" alt="lol" />
+        </div>
+      </div>
+    </section>
+
+    <section id="section4">
+      <div class="content">
+        <h1>Qilin</h1>
+        <p>
+         Our flagship product, Qilin 2b, is a versatile generative AI model capable of natural language processing, creative writing, and multilingual translation. Qilin's advanced neural architecture enables it to generate human-quality text, code, and other creative content.
+        </p>
+        <a href="https://qilin-exocr.vercel.app/" target="_blank">
+          <button>
+            <h2>Try Now ></h2>
+          </button>
+        </a>
+      </div>
+    </section>
+
+    <section id="section5">
+      <div class="content">
+        <h1>Research</h1>
+        <p>
+Our research team, in collaboration with renowned institutions like Caltech and qresearch, is pushing the boundaries of AI research. We're exploring cutting-edge techniques in reinforcement learning, unsupervised learning, and meta-learning. Our partnership with industry leaders like Google allows us to access state-of-the-art tools and datasets, accelerating our research efforts.
+        </p>
+      </div>
+    </section>
+
+    <section id="section6">
+      <div class="content">
+        <p>易道博识 — Beijing, China</p>
+        <p>© Copyright 2024 Exocr Technologies </p>
+      </div>
+    </section>
+
+    <script>
+      function toggleMenu() {
+        const menu = document.querySelector(".menu");
+        menu.classList.toggle("show");
+      }
+    </script>
+  </body>
+</html>
